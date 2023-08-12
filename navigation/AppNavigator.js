@@ -46,12 +46,13 @@ const MainTabNavigator = () => {
 
 const AppNavigator = () => {
 
-  const { isSignedIn } = useContext(AuthContext);
+  const { state } = useContext(AuthContext);
+  console.log(state?.token)
 
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false}}>
-        {isSignedIn ? ( 
+        {state?.token ? ( 
           <Stack.Screen name="Main" component={MainTabNavigator} />
         ) : (
           <> 

@@ -1,16 +1,24 @@
-import React, { useState } from 'react';
-import {View, StyleSheet, Text} from 'react-native';
-import Spacer from '../components/Spacer';
-import Form from '../components/Form';
-import NavLink from '../components/NavLink';
+import React, { useContext, useEffect, useState } from "react";
+import { View, StyleSheet, Text } from "react-native";
+import Spacer from "../components/Spacer";
+import Form from "../components/Form";
+import NavLink from "../components/NavLink";
+import { Context as AuthContext } from "../context/AuthContext";
+import { useNavigation } from "@react-navigation/native";
 
 const SignInScreen = () => {
+  const { state, signIn, clearErrorMessage } = useContext(AuthContext);
+
+  const navigation = useNavigation();
   const [email, setEmail] = useState("");
 
   const [password, setPassword] = useState("");
 
-
-  const handleSignIn = () => {};
+  console.log(email, password);
+  const handleSignIn = () => {
+    console.log(email, password);
+    signIn({ email, password });
+  };
 
   const fields = [
     {
@@ -25,18 +33,47 @@ const SignInScreen = () => {
       isPassword: true,
     },
   ];
+
+  useEffect(() => {
+    if (state.errorMessage) {
+      const timeout = setTimeout(() => {
+        clearErrorMessage();
+      }, 3000);
+
+      return () => {
+        clearTimeout(timeout);
+      };
+    }
+  }, [state.errorMessage]);
+
+  useEffect(() => {
+    const unscribe = navigation.addListener('blur', () => {
+      clearErrorMessage();
+    })
+
+    return unscribe;
+  }, [navigation])
+
   return (
     <View style={styles.container}>
       <Spacer>
         <Text style={styles.header}>Sign In For Rider</Text>
       </Spacer>
-      <Form fields={fields} onSubmit={handleSignIn} buttonText="Sing In" />
+      <Form
+        fields={fields}
+        error={state.errorMessage}
+        onSubmit={handleSignIn}
+        buttonText="Sing In"
+      />
       <Spacer>
-        <NavLink toScreen="SignUp" text="Dont have an account? Sign up instead" />
+        <NavLink
+          toScreen="SignUp"
+          text="Dont have an account? Sign up instead"
+        />
       </Spacer>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -46,8 +83,8 @@ const styles = StyleSheet.create({
   },
   header: {
     fontSize: 20,
-    textAlign: 'center'
-  }
-})
+    textAlign: "center",
+  },
+});
 
 export default SignInScreen;

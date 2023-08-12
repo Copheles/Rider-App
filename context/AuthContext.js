@@ -1,20 +1,50 @@
 import createDataContext from "./createDataContext";
+import riderApi from "../api/rider";
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 const authReducer = (state, action) => {
   switch(action.type){
+    case 'add_error':
+      return { ...state, errorMessage: action.payload}
+    case 'clear_error_message':
+      return { ...state, errorMessage: null}
+    case 'signin':
+      return {...state, token: action.payload , errorMessage: null}
     default: 
-    return state;
+      return state;
   }
 }
 
-const signUp = (dispatch) => ({ email, password}) => {
+const signUp = (dispatch) => async ({ email, password, username}) => {
+  try {
+    console.log(email, password, username)
+    const response = await riderApi.post("/register", { email, password, name: username})
+    await AsyncStorage.setItem('token', response.data.token);
+    dispatch({ type: 'signin', payload: response.data.token})
 
+    console.log(response.data)
+  } catch (error) {
+    console.log(error.response.data)
+    dispatch({ type: 'add_error', payload: error.response.data.error})
+  }
 }
 
+const clearErrorMessage = dispatch => () => {
+  dispatch({ type: 'clear_error_message'})
+}
 
-const signIn = (dispatch) => ({ email, password}) => {
+const signIn = (dispatch) => async ({ email, password}) => {
+  try {
+    console.log(email, password)
+    const response = await riderApi.post("/login", { email, password })
+    await AsyncStorage.setItem('token', response.data.token);
+    dispatch({ type: 'signin', payload: response.data.token})
 
-  
+    // console.log(response.data)
+  } catch (error) {
+    console.log(error.response.data)
+    dispatch({ type: 'add_error', payload: error.response.data.message})
+  }  
 }
 
 const signOut = (dispatch) =>  () => {
@@ -23,6 +53,6 @@ const signOut = (dispatch) =>  () => {
 
 export const { Provider, Context} = createDataContext(
   authReducer,
-  {signUp, signIn, signOut},
-  { isSignedIn: false}
+  {signUp, signIn, signOut, clearErrorMessage},
+  { token: null , errorMessage: null}
 )
