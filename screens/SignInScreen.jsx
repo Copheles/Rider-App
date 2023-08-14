@@ -9,12 +9,12 @@ import { useNavigation } from "@react-navigation/native";
 const SignInScreen = () => {
   const { state, signIn, clearErrorMessage } = useContext(AuthContext);
 
-  const navigation = useNavigation();
   const [email, setEmail] = useState("");
-
   const [password, setPassword] = useState("");
-
+  
+  const navigation = useNavigation();
   console.log(email, password);
+  
   const handleSignIn = () => {
     console.log(email, password);
     signIn({ email, password });

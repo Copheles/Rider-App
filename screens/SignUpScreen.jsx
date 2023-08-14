@@ -1,6 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import { SafeAreaView, Text } from "react-native";
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, Text } from "react-native";
 import Form from "../components/Form";
 import Spacer from "../components/Spacer";
 import NavLink from "../components/NavLink";
@@ -11,10 +10,9 @@ const SignUpScreen = () => {
   const { state, signUp, clearErrorMessage } = useContext(AuthContext);
 
   const [email, setEmail] = useState("");
-
   const [password, setPassword] = useState("");
-
   const [username, setUsername] = useState("");
+
   const navigation = useNavigation();
   const handleSignUp = () => {
     console.log(email, password, username);

@@ -1,6 +1,7 @@
 import createDataContext from "./createDataContext";
 import riderApi from "../api/rider";
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import { useContext } from "react";
 
 const authReducer = (state, action) => {
   switch(action.type){
@@ -10,6 +11,8 @@ const authReducer = (state, action) => {
       return { ...state, errorMessage: null}
     case 'signin':
       return {...state, token: action.payload , errorMessage: null}
+    case 'logout':
+      return { ...state, token: null, errorMessage: null}
     default: 
       return state;
   }
@@ -38,9 +41,9 @@ const signIn = (dispatch) => async ({ email, password}) => {
     console.log(email, password)
     const response = await riderApi.post("/login", { email, password })
     await AsyncStorage.setItem('token', response.data.token);
+    await AsyncStorage.setItem('user', JSON.stringify(response.data.user))
     dispatch({ type: 'signin', payload: response.data.token})
 
-    // console.log(response.data)
   } catch (error) {
     console.log(error.response.data)
     dispatch({ type: 'add_error', payload: error.response.data.message})
@@ -48,7 +51,7 @@ const signIn = (dispatch) => async ({ email, password}) => {
 }
 
 const signOut = (dispatch) =>  () => {
-
+  dispatch({ type: 'logout'})
 }
 
 export const { Provider, Context} = createDataContext(
@@ -56,3 +59,8 @@ export const { Provider, Context} = createDataContext(
   {signUp, signIn, signOut, clearErrorMessage},
   { token: null , errorMessage: null}
 )
+
+export const useAuth = () => {
+  const authContext = useContext(Context);
+  return authContext;
+};
