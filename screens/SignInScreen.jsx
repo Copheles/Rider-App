@@ -7,6 +7,7 @@ import { Context as AuthContext } from "../context/AuthContext";
 import { useNavigation } from "@react-navigation/native";
 
 const SignInScreen = () => {
+
   const { state, signIn, clearErrorMessage } = useContext(AuthContext);
 
   const [email, setEmail] = useState("");
@@ -63,7 +64,7 @@ const SignInScreen = () => {
         fields={fields}
         error={state.errorMessage}
         onSubmit={handleSignIn}
-        buttonText="Sing In"
+        buttonText="Sign In"
       />
       <Spacer>
         <NavLink

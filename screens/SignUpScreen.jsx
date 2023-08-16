@@ -7,7 +7,7 @@ import { Context as AuthContext } from "../context/AuthContext";
 import { useNavigation } from "@react-navigation/native";
 
 const SignUpScreen = () => {
-  const { state, signUp, clearErrorMessage } = useContext(AuthContext);
+  const { state, signUp, clearErrorMessage, tryLocalSignIn } = useContext(AuthContext);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -37,6 +37,10 @@ const SignUpScreen = () => {
       isPassword: true,
     },
   ];
+
+  useEffect(() => {
+    tryLocalSignIn()
+  },[])
 
   useEffect(() => {
     if (state.errorMessage) {

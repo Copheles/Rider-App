@@ -32,6 +32,7 @@ const signUp = (dispatch) => async ({ email, password, username}) => {
   }
 }
 
+
 const clearErrorMessage = dispatch => () => {
   dispatch({ type: 'clear_error_message'})
 }
@@ -50,13 +51,21 @@ const signIn = (dispatch) => async ({ email, password}) => {
   }  
 }
 
-const signOut = (dispatch) =>  () => {
+const tryLocalSignIn = (dispatch) => async() => {
+  const token = await AsyncStorage.getItem('token');
+  if(token) {
+    dispatch({ type: "signin", payload: token})
+  }
+}
+
+const signOut = (dispatch) => async () => {
+  await AsyncStorage.removeItem('token')
   dispatch({ type: 'logout'})
 }
 
 export const { Provider, Context} = createDataContext(
   authReducer,
-  {signUp, signIn, signOut, clearErrorMessage},
+  {signUp, signIn, signOut, clearErrorMessage, tryLocalSignIn},
   { token: null , errorMessage: null}
 )
 
