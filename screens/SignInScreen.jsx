@@ -1,39 +1,30 @@
 import React, { useContext, useEffect, useState } from "react";
-import { View, StyleSheet, Text } from "react-native";
+import { View, StyleSheet, Text, TextInput } from "react-native";
 import Spacer from "../components/Spacer";
 import Form from "../components/Form";
 import NavLink from "../components/NavLink";
 import { Context as AuthContext } from "../context/AuthContext";
 import { useNavigation } from "@react-navigation/native";
+import { Formik } from "formik";
+import * as yup from "yup";
+import { Button } from "react-native";
 
 const SignInScreen = () => {
-
   const { state, signIn, clearErrorMessage } = useContext(AuthContext);
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  
+  const validationSchema = yup.object().shape({
+    email: yup.string().email("Invalid Email").required("Email is required"),
+    password: yup
+      .string()
+      .min(5, ({ min }) => `Password must be at least ${min} characters.`)
+      .required("Password is required"),
+  });
+
   const navigation = useNavigation();
-  console.log(email, password);
-  
+
   const handleSignIn = () => {
-    console.log(email, password);
     signIn({ email, password });
   };
-
-  const fields = [
-    {
-      placeholder: "Email",
-      onChangeText: setEmail,
-      value: email,
-    },
-    {
-      placeholder: "Password",
-      onChangeText: setPassword,
-      value: password,
-      isPassword: true,
-    },
-  ];
 
   useEffect(() => {
     if (state.errorMessage) {
@@ -48,31 +39,71 @@ const SignInScreen = () => {
   }, [state.errorMessage]);
 
   useEffect(() => {
-    const unscribe = navigation.addListener('blur', () => {
+    const unscribe = navigation.addListener("blur", () => {
       clearErrorMessage();
-    })
+    });
 
     return unscribe;
-  }, [navigation])
+  }, [navigation]);
 
   return (
-    <View style={styles.container}>
-      <Spacer>
-        <Text style={styles.header}>Sign In For Rider</Text>
-      </Spacer>
-      <Form
-        fields={fields}
-        error={state.errorMessage}
-        onSubmit={handleSignIn}
-        buttonText="Sign In"
-      />
-      <Spacer>
-        <NavLink
-          toScreen="SignUp"
-          text="Dont have an account? Sign up instead"
-        />
-      </Spacer>
-    </View>
+    <Formik
+      initialValues={{ email: "", password: "" }}
+      validationSchema={validationSchema}
+      onSubmit={signIn}
+    >
+      {({
+        handleChange,
+        handleBlur,
+        handleSubmit,
+        values,
+        errors,
+        touched,
+      }) => (
+        <View style={styles.container}>
+          <Spacer>
+            <Text style={styles.header}>Sign In For Rider</Text>
+          </Spacer>
+          <Spacer>
+            <TextInput
+              onChangeText={handleChange("email")}
+              onBlur={handleBlur("email")}
+              value={values.email}
+              placeholder="Email"
+              keyboardType="email-address"
+              autoCorrect={false}
+              autoCapitalize="none"
+            />
+            {touched.email && errors.email && (
+              <Text style={{ color: "red" }}>{errors.email}</Text>
+            )}
+          </Spacer>
+          <Spacer>
+            <TextInput
+              onChangeText={handleChange("password")}
+              onBlur={handleBlur("password")}
+              value={values.password}
+              placeholder="Password"
+              secureTextEntry
+              autoCorrect={false}
+              autoCapitalize="none"
+            />
+            {touched.password && errors.password && (
+              <Text style={{ color: "red" }}>{errors.password}</Text>
+            )}
+          </Spacer>
+          <Spacer>
+            <Button title="Sign In" onPress={handleSubmit} />
+          </Spacer>
+          <Spacer>
+            <NavLink
+              toScreen="SignUp"
+              text="Dont have an account? Sign up instead"
+            />
+          </Spacer>
+        </View>
+      )}
+    </Formik>
   );
 };
 

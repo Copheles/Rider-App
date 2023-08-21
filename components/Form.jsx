@@ -1,7 +1,10 @@
 import React from "react";
 import { Button, Text } from "react-native";
 import { View, StyleSheet, TextInput } from "react-native";
+import { Formik } from "formik";
+import * as yup from 'yup';
 import Spacer from "./Spacer";
+
 
 const Form = ({ fields, error, onSubmit, buttonText }) => {
   return (
