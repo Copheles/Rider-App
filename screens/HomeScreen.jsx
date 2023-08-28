@@ -1,19 +1,21 @@
 import { useNavigation } from '@react-navigation/native';
 import React from 'react';
-import { Button } from 'react-native';
+import { Button, SafeAreaView } from 'react-native';
 import {View, StyleSheet, Text} from 'react-native';
+import Map from '../components/Map';
 
 const HomeScreen = () => {
-  const navigation = useNavigation(); // Hook for navigation
+  const navigation = useNavigation();
+  
+  // const [err] = useLocation(true, ()=> {
+  //   console.log('hello')
+  // })
 
   return (
-    <View>
-      <Text>Welcome to Home Screen</Text>
-      <Button
-        title="Go to Profile"
-        onPress={() => navigation.navigate('Profile')}
-      />
-    </View>
+    <SafeAreaView>
+      <Text>Home Screen</Text>
+      <Map />
+    </SafeAreaView>
   );
 };
 

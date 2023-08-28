@@ -6,8 +6,6 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 
 const userProfileReducer = (state, action) => {
-
-  // Define your reducer logic here based on action types
   switch(action.type){
     case 'get_profile':
       return { ...state, userProfile: action.payload}
@@ -19,13 +17,11 @@ const userProfileReducer = (state, action) => {
 };
 
 const getUserProfile = (dispatch) => async () => {
-  // Fetch the user's profile data from an API and dispatch an action
   try {
     const user = await AsyncStorage.getItem('user')
     console.log(JSON.parse(user))
     dispatch({ type: 'get_profile', payload: JSON.parse(user) });
   } catch (error) {
-    // Handle error
     console.log(error);
   }
 };
